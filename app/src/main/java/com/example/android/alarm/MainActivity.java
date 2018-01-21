@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         this.context = this;
 
+        ReadRSS rssReader = new ReadRSS();
+        rssReader.run();
+
 
         // Initialize alarm manager
 
