@@ -20,9 +20,12 @@ import java.security.Provider;
 
 public class RingtonePlayingService extends Service {
 
+    private static final int REQUESTCODE = 777;
+
     Context context;
     int startId;
     boolean isRunning;
+    NotificationManager notify_manager;
 
     MediaPlayer media_song;
     @Nullable
@@ -91,7 +94,7 @@ public class RingtonePlayingService extends Service {
             // notification
             // Setup notification service
 
-            NotificationManager notify_manager = (NotificationManager)
+            notify_manager = (NotificationManager)
                     getSystemService(NOTIFICATION_SERVICE);
 
             // setup an intent that goes to the main activity
@@ -105,6 +108,10 @@ public class RingtonePlayingService extends Service {
 
             // make the notification parameters
 
+            Intent receiverIntent = new Intent(this, AlarmFinishReceiver.class);
+            PendingIntent pendingReceiverIntent = PendingIntent.getBroadcast(
+                    this, REQUESTCODE, receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
             Notification notification_popup = new Notification.Builder(this)
                     .setContentTitle("An alarm is going off!")
                     .setContentText("Click me!")
@@ -114,7 +121,7 @@ public class RingtonePlayingService extends Service {
                     .setPriority(Notification.PRIORITY_HIGH)
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
-                    .addAction(R.mipmap.ic_launcher, "Stop", stopAlarmPendingIntent)
+                    .addAction(R.mipmap.ic_launcher, "Stop", pendingReceiverIntent)
                     .build();
 
             // setup notification call command
@@ -165,6 +172,11 @@ public class RingtonePlayingService extends Service {
 
     @Override
     public void onDestroy() {
+
+        notify_manager.cancel(0);
+
+        media_song.stop();
+        media_song.release();
 
         this.isRunning = false;
 
