@@ -22,6 +22,7 @@ public class myBaseActivity extends Activity {
     protected void onDestroy() {
         clearReferences();
         super.onDestroy();
+
     }
 
     private void clearReferences(){

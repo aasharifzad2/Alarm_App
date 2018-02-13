@@ -10,6 +10,8 @@ import java.io.*;
 
 public class ReadRSS {
 
+    public static String news = "";
+
     public void run() {
         new Retrieve().execute("http://rss.cnn.com/rss/edition.rss");
     }
@@ -34,14 +36,19 @@ public class ReadRSS {
                     }
                 }
                 in.close();
+
+                news = sourceCode;
                 Log.i("name", sourceCode);
             } catch (MalformedURLException ue){
                 System.out.println("Malformed URL");
             } catch (IOException ioe){
                 System.out.println("Something went wrong reading the contents");
             }
+
             return null;
         }
     }
+
+
 
 }
