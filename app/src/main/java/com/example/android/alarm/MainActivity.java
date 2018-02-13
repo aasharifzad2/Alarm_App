@@ -5,9 +5,12 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -16,6 +19,7 @@ import android.widget.ToggleButton;
 
 
 import java.util.Calendar;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +33,11 @@ public class MainActivity extends AppCompatActivity {
     PendingIntent pending_intent;
 
 
+    TextToSpeech t1;
+    Button b1;
+    Button b2;
+    int result;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -40,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
         ReadRSS rssReader = new ReadRSS();
         rssReader.run();
 
+        b1=(Button) findViewById(R.id.button);
+        b2=(Button) findViewById(R.id.s_button);
 
         // Initialize alarm manager
 
@@ -64,6 +75,40 @@ public class MainActivity extends AppCompatActivity {
         // Initialize buttons
 
         button = (ToggleButton) findViewById(R.id.toggleB);
+
+        // initialize speech
+
+
+
+        t1 = new TextToSpeech(MainActivity.this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status==TextToSpeech.SUCCESS) {
+                    result = t1.setLanguage(Locale.CANADA);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Feature not supported in your device", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(),ReadRSS.news,Toast.LENGTH_SHORT).show();
+                t1.speak(ReadRSS.news, TextToSpeech.QUEUE_FLUSH,null);
+            }
+        });
+
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (t1 != null) {
+                    t1.stop();
+                    t1.shutdown();
+                }
+            }
+        });
+
 
         button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
